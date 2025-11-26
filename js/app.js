@@ -75,7 +75,7 @@ const formatPrice = (price) => {
 // Create Car Card HTML
 const createCarCard = (car) => {
     return `
-        <div class="car-card">
+        <div class="car-card" onclick="window.location.href='product.html?id=${car.id}'" style="cursor: pointer;">
             <img src="${car.image}" alt="${car.brand} ${car.model}" class="car-image">
             <div class="car-details">
                 <span class="car-brand">${car.brand}</span>
@@ -86,6 +86,59 @@ const createCarCard = (car) => {
                     <span><i class="fas fa-car"></i> ${car.type}</span>
                     <span><i class="fas fa-gas-pump"></i> Nafta</span>
                 </div>
+            </div>
+        </div>
+    `;
+};
+
+// Product Details Logic
+const productContainer = document.getElementById('product-container');
+
+const renderProductDetails = () => {
+    if (!productContainer) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = parseInt(urlParams.get('id'));
+    const car = cars.find(c => c.id === carId);
+
+    if (!car) {
+        productContainer.innerHTML = '<div class="error-message" style="text-align: center; padding: 2rem;"><h2>Vehículo no encontrado</h2><a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">Volver al inicio</a></div>';
+        return;
+    }
+
+    // WhatsApp Message
+    const message = `Hola, estoy interesado en el ${car.brand} ${car.model} (${car.year}) que vi en AutoElite.`;
+    const whatsappUrl = `https://wa.me/5491112345678?text=${encodeURIComponent(message)}`;
+
+    productContainer.innerHTML = `
+        <div class="product-grid">
+            <div class="product-image-container">
+                <img src="${car.image}" alt="${car.brand} ${car.model}">
+            </div>
+            <div class="product-info">
+                <span class="product-brand">${car.brand}</span>
+                <h1>${car.model}</h1>
+                <p class="product-price">${formatPrice(car.price)}</p>
+                
+                <div class="product-specs">
+                    <h3>Especificaciones</h3>
+                    <div class="specs-list">
+                        <div class="spec-item"><i class="fas fa-calendar"></i> Año: ${car.year}</div>
+                        <div class="spec-item"><i class="fas fa-car"></i> Tipo: ${car.type}</div>
+                        <div class="spec-item"><i class="fas fa-gas-pump"></i> Combustible: Nafta</div>
+                        <div class="spec-item"><i class="fas fa-tachometer-alt"></i> Km: 0km</div>
+                        <div class="spec-item"><i class="fas fa-cogs"></i> Transmisión: Automática</div>
+                        <div class="spec-item"><i class="fas fa-door-open"></i> Puertas: 4/5</div>
+                    </div>
+                </div>
+
+                <div class="product-description">
+                    <p>Este ${car.brand} ${car.model} del año ${car.year} es la combinación perfecta de estilo, confort y rendimiento. Equipado con la última tecnología y sistemas de seguridad avanzados, te brinda una experiencia de conducción inigualable. Ideal para la ciudad y la ruta.</p>
+                </div>
+
+                <a href="${whatsappUrl}" class="whatsapp-btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Hablar con un Representante
+                </a>
             </div>
         </div>
     `;
@@ -139,6 +192,7 @@ if (hamburger) {
 
 // Initial Render
 document.addEventListener('DOMContentLoaded', () => {
-    renderFeatured();
-    renderInventory();
+    if (featuredContainer) renderFeatured();
+    if (inventoryContainer) renderInventory();
+    renderProductDetails();
 });
